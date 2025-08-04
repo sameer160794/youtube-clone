@@ -1,0 +1,36 @@
+.video-player-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.video-container {
+  margin-bottom: 20px;
+}
+
+.video-info h2 {
+  margin-bottom: 10px;
+}
+
+.actions button {
+  margin-right: 10px;
+}
+
+.comments {
+  margin-top: 30px;
+}
+
+.comments form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.comments input {
+  flex: 1;
+  padding: 8px;
+}
+
+.comments button {
+  padding: 8px 12px;
+}

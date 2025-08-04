@@ -1,0 +1,129 @@
+/* Home.css */
+
+.home {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #fff; /* YouTube's white background */
+  color: #0f0f0f; /* YouTube's primary text color */
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+/* Layout containing sidebar + content */
+.content {
+  display: flex;
+  flex: 1;
+  background-color: #f9f9f9;
+}
+
+/* Sidebar stays on the left */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  padding: 10px 0;
+  height: calc(100vh - 56px); /* below header */
+  overflow-y: auto;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+/* Main content area beside sidebar */
+.main-content {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+}
+
+/* Filter buttons row */
+.filter-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #c0c0c0 transparent;
+}
+
+.filter-buttons::-webkit-scrollbar {
+  height: 6px;
+}
+
+.filter-buttons::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 3px;
+}
+
+/* Individual filter buttons */
+.filter-buttons button {
+  background-color: #e8e8e8;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  color: #030303;
+  transition: background-color 0.25s, color 0.25s;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+}
+
+.filter-buttons button:hover {
+  background-color: #dcdcdc;
+}
+
+.filter-buttons button.active {
+  background-color: #000;
+  color: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.3);
+}
+
+/* Video card grid layout */
+.videos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+/* Scrollbar styling for main content if needed */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+/* Optional: Sidebar scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-content {
+    padding: 16px 20px;
+  }
+
+  .filter-buttons {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .filter-buttons button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
