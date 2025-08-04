@@ -42,7 +42,7 @@ export default function Header() {
         {menuOpen && (
           <nav className="dropdown-menu">
             <Link to="/" className="dropdown-item" onClick={() => setMenuOpen(false)}>Home</Link>
-            <button className="dropdown-item" onClick={() => setMenuOpen(false)}>Trending</button>
+            <button className="dropdown-item" onClick={() => setMenuOpen(false)}>Shorts</button>
             <button className="dropdown-item" onClick={() => setMenuOpen(false)}>Subscriptions</button>
             <button className="dropdown-item" onClick={() => setMenuOpen(false)}>Library</button>
             <button className="dropdown-item" onClick={() => setMenuOpen(false)}>History</button>

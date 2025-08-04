@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Sidebar.css'; // optional styling
 
-const categories = ['All', 'React', 'Node.js', 'MongoDB', 'Web Dev', 'Tutorials'];
+const categories = ['Home', 'Subscriptions', 'Shorts', 'MongoDB', 'Web Dev', 'Tutorials'];
 
 export default function Sidebar() {
   const [active, setActive] = useState('All');
