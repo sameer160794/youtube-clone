@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';  // Import your Header
+
 import './Login.css';
 
 const Login = () => {
@@ -49,7 +49,7 @@ const Login = () => {
 
   return (
     <>
-      <Header />  {/* Add Header here */}
+     
       <div className="login-page">
         <div className="login-card">
           <h2>{isRegister ? 'Register' : 'Login'}</h2>

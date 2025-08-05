@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 
-export default function Header() {
+export default function Header({ searchQuery, setSearchQuery }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -24,6 +24,19 @@ export default function Header() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
+  };
+
+  // This function triggers navigation to home page (or search results)
+  const handleSearch = () => {
+    // Navigate to homepage so Home component will filter videos based on searchQuery
+    navigate('/');
+  };
+
+  // Handle pressing Enter in input
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
   };
 
   return (
@@ -57,9 +70,11 @@ export default function Header() {
           type="text"
           placeholder="Search"
           className="search-input"
-          // You can add search handlers here
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
-        <button className="search-button">🔍</button>
+        <button className="search-button" onClick={handleSearch}>🔍</button>
       </div>
 
       <div className="right-section">

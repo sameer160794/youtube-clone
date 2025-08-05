@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import VideoCard from '../components/VideoCard';
 import './Home.css';
@@ -45,20 +44,17 @@ const sampleVideos = [
   },
 ];
 
-export default function Home() {
+export default function Home({ searchQuery }) {
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const filteredVideos =
-    activeCategory === 'All'
-      ? sampleVideos
-      : sampleVideos.filter((video) => video.category === activeCategory);
+  const filteredVideos = sampleVideos.filter((video) => {
+    const matchesCategory = activeCategory === 'All' || video.category === activeCategory;
+    const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="home">
-      {/* Top header */}
-      <Header />
-
-      {/* Sidebar + Main Content */}
       <div className="content">
         <div className="sidebar">
           <Sidebar />
@@ -78,7 +74,7 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Video cards */}
+          {/* Video grid */}
           <div className="videos">
             {filteredVideos.map((video) => (
               <VideoCard key={video.videoId} video={video} />
