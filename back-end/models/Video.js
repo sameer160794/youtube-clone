@@ -1,16 +1,22 @@
+// models/Video.js
 const mongoose = require('mongoose');
 
-const videoSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: String,
-  videoUrl: { type: String, required: true }, // or a reference if storing externally
-  thumbnailUrl: String,
-  views: { type: Number, default: 0 },
-  likes: { type: Number, default: 0 },
-  dislikes: { type: Number, default: 0 },
-  uploader: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  category: String,
-  createdAt: { type: Date, default: Date.now }
+const commentSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  text: String,
+  timestamp: { type: Date, default: Date.now },
 });
+
+const videoSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  url: String,
+  thumbnail: String,
+  uploader: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  views: { type: Number, default: 0 },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  comments: [commentSchema],
+}, { timestamps: true });
 
 module.exports = mongoose.model('Video', videoSchema);

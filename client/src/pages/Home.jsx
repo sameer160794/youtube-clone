@@ -1,53 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import VideoCard from '../components/VideoCard';
 import './Home.css';
 
 const categories = ['All', 'React', 'Node.js', 'MongoDB', 'Web Dev', 'Tutorials'];
 
-const sampleVideos = [
-  {
-    videoId: 'video01',
-    title: 'Learn React in 30 Minutes',
-    thumbnailUrl: 'https://via.placeholder.com/300x200',
-    uploader: 'user01',
-    views: 15200,
-    channelName: 'Code with John',
-    category: 'React',
-  },
-  {
-    videoId: 'video02',
-    title: 'Node.js Crash Course',
-    thumbnailUrl: 'https://via.placeholder.com/300x200',
-    uploader: 'user02',
-    views: 23000,
-    channelName: 'Dev with Mike',
-    category: 'Node.js',
-  },
-  {
-    videoId: 'video03',
-    title: 'MongoDB for Beginners',
-    thumbnailUrl: 'https://via.placeholder.com/300x200',
-    uploader: 'user03',
-    views: 8900,
-    channelName: 'Code Base',
-    category: 'MongoDB',
-  },
-  {
-    videoId: 'video04',
-    title: 'Responsive Web Design',
-    thumbnailUrl: 'https://via.placeholder.com/300x200',
-    uploader: 'user04',
-    views: 15000,
-    channelName: 'DesignX',
-    category: 'Web Dev',
-  },
-];
-
 export default function Home({ searchQuery }) {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [videos, setVideos] = useState([]);
 
-  const filteredVideos = sampleVideos.filter((video) => {
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/videos');
+        setVideos(res.data);
+      } catch (err) {
+        console.error('Failed to fetch videos', err);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  const filteredVideos = videos.filter((video) => {
     const matchesCategory = activeCategory === 'All' || video.category === activeCategory;
     const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
@@ -76,12 +52,16 @@ export default function Home({ searchQuery }) {
 
           {/* Video grid */}
           <div className="videos">
-            {filteredVideos.map((video) => (
-              <VideoCard key={video.videoId} video={video} />
-            ))}
+            {filteredVideos.length === 0 ? (
+              <p>No videos found</p>
+            ) : (
+              filteredVideos.map((video) => <VideoCard key={video._id} video={video} />)
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+

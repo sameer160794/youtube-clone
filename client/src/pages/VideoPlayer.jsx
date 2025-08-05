@@ -1,49 +1,92 @@
 import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import RecommendedVideoCard from '../components/RecommendedVideoCard';
 import './VideoPlayer.css';
 
-const sampleVideo = {
-  videoId: 'video01',
-  title: 'Learn React in 30 Minutes',
-  description: 'A quick tutorial to get started with React.',
-  channelName: 'Code with John',
-  channelAvatar: 'https://via.placeholder.com/48',
-  subscribers: 5200,
-  views: 15200,
-  likes: 1023,
-  dislikes: 45,
-  comments: [
-    {
-      commentId: 'comment01',
-      userId: 'user02',
-      text: 'Great video! Very helpful.',
-      timestamp: '2024-09-21T08:30:00Z',
-    },
-  ],
-};
-
-const recommendedVideos = [
-  {
-    videoId: 'video02',
-    title: 'React Hooks Explained',
-    thumbnailUrl: 'https://via.placeholder.com/120x70',
-    description: 'A quick intro to React Hooks.',
-    channelName: 'Code with John',
-    views: 10500,
-  },
-  {
-    videoId: 'video03',
-    title: 'Advanced React Patterns',
-    thumbnailUrl: 'https://via.placeholder.com/120x70',
-    description: 'Learn advanced React component patterns.',
-    channelName: 'Dev with Mike',
-    views: 8700,
-  },
-  // Add more recommended videos if needed
-];
-
 export default function VideoPlayer() {
   const { id } = useParams();
+  const [video, setVideo] = useState(null);
+  const [recommendedVideos, setRecommendedVideos] = useState([]);
+  const [commentText, setCommentText] = useState('');
+
+  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const userId = user?._id || user?.id;
+
+  // ✅ Fetch video with view increment
+  const fetchVideo = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/videos/${id}/viewed`);
+      setVideo(res.data);
+    } catch (err) {
+      console.error('Error fetching video:', err);
+    }
+  };
+
+  // ✅ Fetch recommended videos
+  const fetchRecommended = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/videos');
+      const others = res.data.filter((v) => v._id !== id);
+      setRecommendedVideos(others);
+    } catch (err) {
+      console.error('Error fetching recommended videos:', err);
+    }
+  };
+
+  // ✅ Fetch on initial load or when video ID changes
+  useEffect(() => {
+    fetchVideo();
+    fetchRecommended();
+  }, [id]);
+
+  // ✅ Re-fetch video when login/logout happens (to update comments with usernames)
+  useEffect(() => {
+    if (video) {
+      fetchVideo();
+    }
+  }, [userId]);
+
+  const handleLike = async () => {
+    if (!userId) return alert('Please log in to like the video.');
+    try {
+      const res = await axios.post(`http://localhost:5000/api/videos/${id}/like`, { userId });
+      setVideo(res.data);
+    } catch (err) {
+      console.error('Error liking video:', err);
+    }
+  };
+
+  const handleDislike = async () => {
+    if (!userId) return alert('Please log in to dislike the video.');
+    try {
+      const res = await axios.post(`http://localhost:5000/api/videos/${id}/dislike`, { userId });
+      setVideo(res.data);
+    } catch (err) {
+      console.error('Error disliking video:', err);
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+    if (!userId) return alert('Please log in to comment.');
+
+    try {
+      await axios.post(`http://localhost:5000/api/videos/${id}/comment`, {
+        userId,
+        text: commentText.trim(),
+      });
+
+      // ✅ Re-fetch updated video with new comments
+      await fetchVideo();
+      setCommentText('');
+    } catch (err) {
+      console.error('Error posting comment:', err);
+    }
+  };
+
+  if (!video) return <p>Loading video...</p>;
 
   return (
     <div className="video-player-page">
@@ -53,58 +96,71 @@ export default function VideoPlayer() {
             title="video"
             width="100%"
             height="400px"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+            src={video.url.replace('watch?v=', 'embed/')}
             frameBorder="0"
             allowFullScreen
           />
         </div>
 
         <div className="video-info">
-          <h2>{sampleVideo.title}</h2>
-          <p>{sampleVideo.views.toLocaleString()} views</p>
+          <h2>{video.title}</h2>
+          <p>{video.views?.toLocaleString() || 0} views</p>
 
           <div className="channel-info">
             <img
-              src={sampleVideo.channelAvatar}
+              src={'https://dummyimage.com/48x48/ccc/000.png&text=Avatar'}
               alt="Channel Avatar"
               className="channel-avatar"
             />
             <div className="channel-meta">
-              <strong>{sampleVideo.channelName}</strong>
-              <p>{sampleVideo.subscribers.toLocaleString()} subscribers</p>
+              <strong>{video.uploader?.username || 'Unknown Channel'}</strong>
+              <p>{video.subscribers?.toLocaleString?.() || '—'} subscribers</p>
             </div>
             <button className="subscribe-btn">Subscribe</button>
           </div>
 
           <div className="actions">
-            <button>👍 {sampleVideo.likes}</button>
-            <button>👎 {sampleVideo.dislikes}</button>
+            <button onClick={handleLike}>👍 {video.likes?.length || 0}</button>
+            <button onClick={handleDislike}>👎 {video.dislikes?.length || 0}</button>
           </div>
 
-          <p>{sampleVideo.description}</p>
+          <p>{video.description}</p>
         </div>
 
         <div className="comments">
           <h3>Comments</h3>
-          <form>
-            <input type="text" placeholder="Add a comment..." />
+          <form onSubmit={handleCommentSubmit}>
+            <input
+              type="text"
+              placeholder="Add a comment..."
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
             <button type="submit">Post</button>
           </form>
 
-          <ul>
-            {sampleVideo.comments.map((c) => (
-              <li key={c.commentId}>
-                <strong>{c.userId}:</strong> {c.text}
-                <span> ({new Date(c.timestamp).toLocaleString()})</span>
-              </li>
-            ))}
-          </ul>
+          {video.comments?.length > 0 ? (
+            <ul>
+              {video.comments.map((c, idx) => (
+                <li key={idx}>
+                  <strong>
+                    {typeof c.userId === 'object' && c.userId?.username
+                      ? c.userId.username
+                      : 'Unknown User'}
+                  </strong>
+                  : {c.text}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No comments yet. Be the first to comment!</p>
+          )}
         </div>
       </div>
 
       <aside className="recommended-videos">
-        {recommendedVideos.map((video) => (
-          <RecommendedVideoCard key={video.videoId} video={video} />
+        {recommendedVideos.map((vid) => (
+          <RecommendedVideoCard key={vid._id} video={vid} />
         ))}
       </aside>
     </div>
