@@ -36,16 +36,29 @@ const Login = () => {
     }
   };
 
-  const handleRegisterSubmit = (e) => {
-    e.preventDefault();
-    if (registerData.password !== registerData.confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
-    alert('Registration submitted! Implement your API call here.');
+const handleRegisterSubmit = async (e) => {
+  e.preventDefault();
+
+  if (registerData.password !== registerData.confirmPassword) {
+    alert('Passwords do not match!');
+    return;
+  }
+
+  try {
+    // Send POST request to your backend registration route
+    await axios.post('http://localhost:5000/api/auth/register', {
+      username: registerData.username,
+      email: registerData.email,
+      password: registerData.password,
+    });
+    
+    alert('Registered successfully! Please login.');
     setIsRegister(false);
     setRegisterData({ username: '', email: '', password: '', confirmPassword: '' });
-  };
+  } catch (error) {
+    alert(error.response?.data?.message || 'Registration failed');
+  }
+};
 
   return (
     <>
